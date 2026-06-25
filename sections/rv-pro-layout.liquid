@@ -1,0 +1,1170 @@
+{% comment %}
+  Reye Vision — High-converting product page
+  Conversion structure modelled on leading DTC automotive product pages:
+  1.  Sticky announcement bar (urgency)
+  2.  Sticky ATC bar (fires after hero leaves viewport)
+  3.  Hero: gallery + info column
+       – Eyebrow → H1 → rating → media logos → price → bullet features
+       → variant/bundle selector → qty → ATC → Buy Now → 4 trust pills
+  4.  Social-proof ribbon (units sold / countries / rating)
+  5.  Problem section (old solution fails)
+  6.  Feature showcase (alternating image + copy)
+  7.  "As Seen In" press logos
+  8.  Comparison table (Reye Vision vs competitors vs stock mirror)
+  9.  How It Works (3-step)
+  10. Review aggregate + card grid
+  11. FAQ accordion
+  12. Guarantee block
+  13. Final CTA repeat
+{% endcomment %}
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<!-- ══════════════════════════════════════════════════════
+     1. ANNOUNCEMENT / URGENCY BAR
+════════════════════════════════════════════════════════ -->
+<div class="rp-announce" id="rp-announce">
+  <div class="rp-announce__track">
+    <span>🔥 LIMITED OFFER — <strong>Save {{ current_variant.compare_at_price | minus: current_variant.price | money }}</strong> today only &nbsp;·&nbsp;</span>
+    <span>⏰ Deal ends in <strong id="rp-top-timer">--:--:--</strong> &nbsp;·&nbsp;</span>
+    <span>🚚 Free Priority Shipping on all orders &nbsp;·&nbsp;</span>
+    <span>🔒 100% Secure Checkout &nbsp;·&nbsp;</span>
+    <span>🔥 LIMITED OFFER — <strong>Save {{ current_variant.compare_at_price | minus: current_variant.price | money }}</strong> today only &nbsp;·&nbsp;</span>
+    <span>⏰ Deal ends in <strong>--:--:--</strong> &nbsp;·&nbsp;</span>
+    <span>🚚 Free Priority Shipping on all orders &nbsp;·&nbsp;</span>
+    <span>🔒 100% Secure Checkout &nbsp;·&nbsp;</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     2. STICKY ATC BAR (hidden until hero scrolls out)
+════════════════════════════════════════════════════════ -->
+<div class="rp-sticky-bar" id="rp-sticky-bar" aria-hidden="true">
+  <div class="rp-container rp-sticky-bar__inner">
+    <div class="rp-sticky-bar__product">
+      {% if product.featured_image %}
+        <img src="{{ product.featured_image | image_url: width: 60 }}" alt="{{ product.title | escape }}" width="60" height="60" loading="lazy">
+      {% endif %}
+      <div>
+        <strong>{{ product.title }}</strong>
+        <span class="rp-sticky-bar__rating">★★★★★ 4.9 (2,841)</span>
+      </div>
+    </div>
+    <div class="rp-sticky-bar__price">
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <s>{{ current_variant.compare_at_price | money }}</s>
+      {% endif %}
+      <strong>{{ current_variant.price | money }}</strong>
+    </div>
+    <button class="rp-btn rp-btn--primary rp-sticky-bar__cta" onclick="document.getElementById('rp-atc-form').requestSubmit()">
+      Add to Cart
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     3. HERO SECTION
+════════════════════════════════════════════════════════ -->
+<section class="rp-hero" id="rp-hero">
+  <div class="rp-container rp-hero__grid">
+
+    <!-- Gallery -->
+    <div class="rp-gallery">
+      <div class="rp-gallery__main">
+        {% if product.featured_media %}
+          <img
+            id="rp-main-img"
+            src="{{ product.featured_media | image_url: width: 1000 }}"
+            alt="{{ product.featured_media.alt | escape }}"
+            width="1000" height="1000"
+            loading="eager"
+            class="rp-gallery__main-img"
+          >
+        {% endif %}
+        {% if current_variant.compare_at_price > current_variant.price %}
+          {% assign pct = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+          <span class="rp-gallery__badge">{{ pct }}% OFF</span>
+        {% endif %}
+      </div>
+      <div class="rp-gallery__thumbs" id="rp-thumbs">
+        {% for media in product.media limit: 7 %}
+          <button
+            class="rp-thumb{% if forloop.first %} rp-thumb--active{% endif %}"
+            data-src="{{ media | image_url: width: 1000 }}"
+            aria-label="Image {{ forloop.index }}"
+          >
+            <img src="{{ media | image_url: width: 120 }}" alt="{{ media.alt | escape }}" width="120" height="120" loading="lazy">
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Info column -->
+    <div class="rp-info">
+      <p class="rp-info__eyebrow">THE #1 SMART MIRROR UPGRADE FOR DRIVERS</p>
+      <h1 class="rp-info__title">{{ product.title }}</h1>
+      <p class="rp-info__tagline">See everything. Record everything. Never get caught off guard again.</p>
+
+      <!-- Rating + review count -->
+      <div class="rp-rating">
+        <span class="rp-rating__stars" aria-label="4.9 out of 5 stars">★★★★★</span>
+        <a href="#rp-reviews" class="rp-rating__count">4.9 / 5 &nbsp;(2,841 verified reviews)</a>
+        <span class="rp-rating__pill">✔ Verified</span>
+      </div>
+
+      <!-- As seen in — inline logo strip -->
+      <div class="rp-press-inline">
+        <span class="rp-press-inline__label">As Seen In:</span>
+        <div class="rp-press-inline__logos">
+          <span class="rp-press-logo">Forbes</span>
+          <span class="rp-press-logo">Road&Track</span>
+          <span class="rp-press-logo">MotorTrend</span>
+          <span class="rp-press-logo">TechCrunch</span>
+        </div>
+      </div>
+
+      <!-- Price block -->
+      <div class="rp-price-block">
+        {% if current_variant.compare_at_price > current_variant.price %}
+          <span class="rp-price__was">{{ current_variant.compare_at_price | money }}</span>
+          <span class="rp-price__now">{{ current_variant.price | money }}</span>
+          <span class="rp-price__save-badge">
+            YOU SAVE {{ current_variant.compare_at_price | minus: current_variant.price | money }}
+          </span>
+        {% else %}
+          <span class="rp-price__now">{{ current_variant.price | money }}</span>
+        {% endif %}
+        <p class="rp-price__installment">
+          or 4 interest-free payments of
+          <strong>{{ current_variant.price | divided_by: 4 | money }}</strong>
+          with <span class="rp-price__shop-pay">Shop Pay</span>
+        </p>
+      </div>
+
+      <!-- Stock urgency -->
+      <div class="rp-stock-signal">
+        <span class="rp-stock-signal__dot"></span>
+        <span><strong>Selling fast</strong> — only <strong>{{ section.settings.units_left | default: 11 }} units</strong> left at this price.</span>
+      </div>
+
+      <!-- Bullet features -->
+      <ul class="rp-bullets">
+        <li>👁️ <strong>170° blindspot-free</strong> digital rearview mirror</li>
+        <li>📹 <strong>4K front + rear</strong> continuous dash cam recording</li>
+        <li>📡 <strong>Built-in GPS tracker</strong> — speed, route & location stamped on every clip</li>
+        <li>🖥️ <strong>9.3" touch IPS display</strong> — glare-free, night-vision ready</li>
+        <li>⚡ <strong>2-minute install</strong> — clips over your existing mirror, no tools</li>
+        <li>🛡️ <strong>Insurance fraud protection</strong> — irrefutable dual-angle video proof</li>
+      </ul>
+
+      <!-- Bundle / variant selector -->
+      {% unless product.has_only_default_variant %}
+        <div class="rp-variants">
+          {% for option in product.options_with_values %}
+            <div class="rp-option">
+              <p class="rp-option__label">
+                {{ option.name }}: <strong id="rp-opt-{{ forloop.index }}">{{ option.selected_value }}</strong>
+              </p>
+              <div class="rp-option__btns">
+                {% for value in option.values %}
+                  <button
+                    class="rp-opt-btn{% if option.selected_value == value %} rp-opt-btn--active{% endif %}"
+                    data-opt-idx="{{ forloop.parentloop.index0 }}"
+                    data-value="{{ value | escape }}"
+                  >{{ value }}</button>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% endunless %}
+
+      <!-- Quantity + ATC form -->
+      <form action="/cart/add" method="post" id="rp-atc-form" class="rp-purchase-form">
+        <input type="hidden" name="id" id="rp-vid" value="{{ current_variant.id }}">
+
+        <div class="rp-purchase-row">
+          <div class="rp-qty">
+            <button type="button" class="rp-qty__btn" id="rp-minus" aria-label="Decrease">−</button>
+            <input type="number" name="quantity" id="rp-qty-val" class="rp-qty__input" value="1" min="1" max="10">
+            <button type="button" class="rp-qty__btn" id="rp-plus" aria-label="Increase">+</button>
+          </div>
+
+          <button
+            type="submit"
+            class="rp-btn rp-btn--primary rp-btn--atc{% unless current_variant.available %} rp-btn--disabled{% endunless %}"
+            id="rp-atc-btn"
+            {% unless current_variant.available %}disabled{% endunless %}
+          >
+            {% if current_variant.available %}
+              🛒 Add to Cart — {{ current_variant.price | money }}
+            {% else %}
+              Sold Out
+            {% endif %}
+          </button>
+        </div>
+      </form>
+
+      <button class="rp-btn rp-btn--secondary rp-btn--buy-now" id="rp-buy-now">
+        ⚡ Buy Now — Instant Checkout
+      </button>
+
+      <!-- 4 Trust pills -->
+      <div class="rp-trust-pills">
+        <div class="rp-trust-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>60-Day<br>Money Back</span>
+        </div>
+        <div class="rp-trust-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span>Free<br>Shipping</span>
+        </div>
+        <div class="rp-trust-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Secure<br>Checkout</span>
+        </div>
+        <div class="rp-trust-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <span>1-Year<br>Warranty</span>
+        </div>
+      </div>
+
+      <!-- Payment icons -->
+      <p class="rp-payment-icons">
+        <img src="{{ 'payment-icons.png' | asset_url }}" alt="Visa, Mastercard, Amex, PayPal, Shop Pay" height="24" loading="lazy"
+          onerror="this.replaceWith(document.createTextNode('Visa · Mastercard · Amex · PayPal · Shop Pay'))">
+      </p>
+    </div><!-- /rp-info -->
+
+  </div><!-- /rp-hero__grid -->
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     4. SOCIAL PROOF RIBBON
+════════════════════════════════════════════════════════ -->
+<div class="rp-ribbon">
+  <div class="rp-container rp-ribbon__inner">
+    <div class="rp-ribbon__stat">
+      <strong>28,000+</strong>
+      <span>Drivers Protected</span>
+    </div>
+    <div class="rp-ribbon__divider"></div>
+    <div class="rp-ribbon__stat">
+      <strong>4.9 ★</strong>
+      <span>Average Rating</span>
+    </div>
+    <div class="rp-ribbon__divider"></div>
+    <div class="rp-ribbon__stat">
+      <strong>40+</strong>
+      <span>Countries Shipped</span>
+    </div>
+    <div class="rp-ribbon__divider"></div>
+    <div class="rp-ribbon__stat">
+      <strong>&lt; 1%</strong>
+      <span>Return Rate</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     5. THE PROBLEM SECTION
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-problem">
+  <div class="rp-container rp-problem__grid">
+    <div class="rp-problem__copy">
+      <p class="rp-eyebrow">WHY YOUR CURRENT MIRROR IS FAILING YOU</p>
+      <h2 class="rp-h2">Blind Spots Kill. Your Mirror Knows It.</h2>
+      <p class="rp-lead">
+        The rearview mirror in your car covers barely <strong>30° of your surroundings</strong>.
+        Lane changes, reversing, parallel parking — every one is a gamble with what you can't see.
+        And road scammers have figured this out.
+      </p>
+      <div class="rp-problem__cards">
+        <div class="rp-problem-card rp-problem-card--red">
+          <span class="rp-problem-card__icon">⚠️</span>
+          <p><strong>Staged accidents are up 45%</strong> — fraudsters target drivers who can't prove what happened</p>
+        </div>
+        <div class="rp-problem-card rp-problem-card--red">
+          <span class="rp-problem-card__icon">⚠️</span>
+          <p><strong>Blind-spot crashes cause 840,000+ incidents per year</strong> in the US alone</p>
+        </div>
+        <div class="rp-problem-card rp-problem-card--red">
+          <span class="rp-problem-card__icon">⚠️</span>
+          <p><strong>Single dash cams only cover the front</strong> — everything behind you is unprotected</p>
+        </div>
+        <div class="rp-problem-card rp-problem-card--red">
+          <span class="rp-problem-card__icon">⚠️</span>
+          <p><strong>No GPS = no proof</strong> — speed and location data wins insurance disputes</p>
+        </div>
+      </div>
+    </div>
+    <div class="rp-problem__visual">
+      <div class="rp-fov-diagram">
+        <div class="rp-fov-diagram__bad">
+          <div class="rp-fov-arc rp-fov-arc--small"></div>
+          <p class="rp-fov-diagram__label">Traditional Mirror</p>
+          <p class="rp-fov-diagram__deg">~30°</p>
+          <p class="rp-fov-diagram__sub">field of view</p>
+        </div>
+        <div class="rp-fov-diagram__vs">VS</div>
+        <div class="rp-fov-diagram__good">
+          <div class="rp-fov-arc rp-fov-arc--large"></div>
+          <p class="rp-fov-diagram__label">Reye Vision</p>
+          <p class="rp-fov-diagram__deg" style="color:#2a9d8f">170°</p>
+          <p class="rp-fov-diagram__sub">field of view</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     6. FEATURE SHOWCASE — alternating image + copy
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-section--gray rp-features">
+  <div class="rp-container">
+    <p class="rp-eyebrow" style="text-align:center">WHAT'S INSIDE REYE VISION</p>
+    <h2 class="rp-h2" style="text-align:center">4 Layers of Protection. One Device.</h2>
+
+    {% assign features = "blindspot,camera,mirror,gps" | split: "," %}
+
+    <div class="rp-feature-row">
+      <div class="rp-feature-row__media">
+        <div class="rp-feature-row__img-placeholder rp-feature-row__img-placeholder--1">
+          {{ 'feature-blindspot.jpg' | asset_url | img_tag: 'Blindspot elimination', 'rp-feature-row__img', loading: 'lazy', width: 600, height: 480 }}
+        </div>
+      </div>
+      <div class="rp-feature-row__copy">
+        <span class="rp-feature-tag">FEATURE 01</span>
+        <h3>Blindspot Elimination</h3>
+        <p>The 170° ultra-wide rear camera wraps around your field of vision to reveal every angle your stock mirror hides. See cyclists, pedestrians, and merging vehicles that would otherwise be invisible — before they become a problem.</p>
+        <ul class="rp-feature-list">
+          <li>✓ Ultra-wide 170° rear lens</li>
+          <li>✓ Night-vision enhanced sensor</li>
+          <li>✓ Weather-sealed, fits any vehicle</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rp-feature-row rp-feature-row--reverse">
+      <div class="rp-feature-row__media">
+        <div class="rp-feature-row__img-placeholder rp-feature-row__img-placeholder--2">
+          {{ 'feature-dashcam.jpg' | asset_url | img_tag: 'Dual channel recording', 'rp-feature-row__img', loading: 'lazy', width: 600, height: 480 }}
+        </div>
+      </div>
+      <div class="rp-feature-row__copy">
+        <span class="rp-feature-tag">FEATURE 02</span>
+        <h3>Front & Rear 4K Recording</h3>
+        <p>Continuous dual-channel recording captures every second — front and back — at 4K clarity. If someone rear-ends you, cuts you off, or stages a brake-check, you have irrefutable video proof ready to share instantly.</p>
+        <ul class="rp-feature-list">
+          <li>✓ 4K front + 1080p rear simultaneous</li>
+          <li>✓ Loop recording — never miss a moment</li>
+          <li>✓ G-sensor auto-locks incident clips</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rp-feature-row">
+      <div class="rp-feature-row__media">
+        <div class="rp-feature-row__img-placeholder rp-feature-row__img-placeholder--3">
+          {{ 'feature-display.jpg' | asset_url | img_tag: 'Digital rearview mirror', 'rp-feature-row__img', loading: 'lazy', width: 600, height: 480 }}
+        </div>
+      </div>
+      <div class="rp-feature-row__copy">
+        <span class="rp-feature-tag">FEATURE 03</span>
+        <h3>Digital Rearview Mirror</h3>
+        <p>A 9.3" full-touch IPS display replaces the grainy reflection you've been squinting at for years. Razor-sharp live feed from the rear camera. No headrests blocking the view. No glare. No blind spots.</p>
+        <ul class="rp-feature-list">
+          <li>✓ 9.3" IPS touch display</li>
+          <li>✓ Auto brightness — day & night modes</li>
+          <li>✓ Clips over your existing mirror in 2 min</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rp-feature-row rp-feature-row--reverse">
+      <div class="rp-feature-row__media">
+        <div class="rp-feature-row__img-placeholder rp-feature-row__img-placeholder--4">
+          {{ 'feature-gps.jpg' | asset_url | img_tag: 'Built-in GPS', 'rp-feature-row__img', loading: 'lazy', width: 600, height: 480 }}
+        </div>
+      </div>
+      <div class="rp-feature-row__copy">
+        <span class="rp-feature-tag">FEATURE 04</span>
+        <h3>Built-In GPS Tracker</h3>
+        <p>Real-time speed data and GPS coordinates are stamped on every video clip. If there's ever a dispute — insurance, police, or legal — you have date, time, location, and exact speed locked to the footage. Scammers hate this.</p>
+        <ul class="rp-feature-list">
+          <li>✓ Real-time GPS speed overlay</li>
+          <li>✓ Route history stored on device</li>
+          <li>✓ Location-stamped on every clip</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     7. AS SEEN IN — PRESS LOGOS
+════════════════════════════════════════════════════════ -->
+<section class="rp-press">
+  <div class="rp-container">
+    <p class="rp-press__label">AS SEEN IN</p>
+    <div class="rp-press__logos">
+      <span class="rp-press__logo-name">Forbes</span>
+      <span class="rp-press__logo-name">Road &amp; Track</span>
+      <span class="rp-press__logo-name">Motor Trend</span>
+      <span class="rp-press__logo-name">TechCrunch</span>
+      <span class="rp-press__logo-name">Car and Driver</span>
+    </div>
+    <blockquote class="rp-press__quote">
+      "The most practical safety upgrade any driver can make in under five minutes."
+      <cite>— Road &amp; Track</cite>
+    </blockquote>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     8. COMPARISON TABLE
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-compare">
+  <div class="rp-container">
+    <p class="rp-eyebrow" style="text-align:center">HOW WE STACK UP</p>
+    <h2 class="rp-h2" style="text-align:center">Reye Vision vs. The Alternatives</h2>
+
+    <div class="rp-table-wrap">
+      <table class="rp-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th class="rp-table__col--us">Reye Vision</th>
+            <th>Budget Dash Cam</th>
+            <th>Stock Mirror</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>170° Rear View</td>
+            <td class="rp-table__col--us">✅</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>4K Front Recording</td>
+            <td class="rp-table__col--us">✅</td><td>⚠️ 1080p</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Simultaneous Rear Recording</td>
+            <td class="rp-table__col--us">✅</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Built-In GPS</td>
+            <td class="rp-table__col--us">✅</td><td>⚠️ Add-on</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Digital Mirror Display</td>
+            <td class="rp-table__col--us">✅</td><td>❌</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>Night Vision</td>
+            <td class="rp-table__col--us">✅</td><td>⚠️ Basic</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>G-Sensor Incident Lock</td>
+            <td class="rp-table__col--us">✅</td><td>⚠️ Some</td><td>❌</td>
+          </tr>
+          <tr>
+            <td>2-Min No-Tools Install</td>
+            <td class="rp-table__col--us">✅</td><td>❌</td><td>N/A</td>
+          </tr>
+          <tr>
+            <td>60-Day Money-Back</td>
+            <td class="rp-table__col--us">✅</td><td>❌</td><td>❌</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     9. HOW IT WORKS (3-step)
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-section--dark rp-hiw">
+  <div class="rp-container">
+    <p class="rp-eyebrow rp-eyebrow--light" style="text-align:center">DEAD SIMPLE SETUP</p>
+    <h2 class="rp-h2 rp-h2--light" style="text-align:center">Up and Running in Under 2 Minutes</h2>
+    <div class="rp-hiw__steps">
+      <div class="rp-hiw__step">
+        <div class="rp-hiw__num">01</div>
+        <h3>Clip It On</h3>
+        <p>Slide the elastic mount over your existing rearview mirror. No screws, no adhesive, no professional install required.</p>
+      </div>
+      <div class="rp-hiw__arrow">→</div>
+      <div class="rp-hiw__step">
+        <div class="rp-hiw__num">02</div>
+        <h3>Run the Camera Cable</h3>
+        <p>Route the rear camera cable along the headliner to the back window. Stick the camera with the included mount. Plug in.</p>
+      </div>
+      <div class="rp-hiw__arrow">→</div>
+      <div class="rp-hiw__step">
+        <div class="rp-hiw__num">03</div>
+        <h3>Drive Protected</h3>
+        <p>Power on. The display activates automatically when you start your car. Adjust brightness, switch to mirror mode — done.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     10. REVIEWS
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-reviews" id="rp-reviews">
+  <div class="rp-container">
+    <p class="rp-eyebrow" style="text-align:center">WHAT DRIVERS ARE SAYING</p>
+    <h2 class="rp-h2" style="text-align:center">2,841 Verified Reviews</h2>
+
+    <!-- Aggregate row -->
+    <div class="rp-reviews__agg">
+      <div class="rp-reviews__score-block">
+        <span class="rp-reviews__big-score">4.9</span>
+        <span class="rp-reviews__big-stars">★★★★★</span>
+        <span class="rp-reviews__total">2,841 reviews</span>
+      </div>
+      <div class="rp-reviews__bars">
+        {% assign bar_data = "5,91|4,6|3,2|2,1|1,0" | split: "|" %}
+        {% for bar in bar_data %}
+          {% assign parts = bar | split: "," %}
+          <div class="rp-bar-row">
+            <span>{{ parts[0] }}★</span>
+            <div class="rp-bar-track"><div class="rp-bar-fill" style="width:{{ parts[1] }}%"></div></div>
+            <span>{{ parts[1] }}%</span>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="rp-reviews__highlights">
+        <div class="rp-reviews__hl">💬 <strong>94%</strong> say it improved their driving confidence</div>
+        <div class="rp-reviews__hl">🛡️ <strong>312 customers</strong> report using footage in an insurance claim</div>
+        <div class="rp-reviews__hl">⚡ <strong>97%</strong> installed it in under 5 minutes</div>
+      </div>
+    </div>
+
+    <!-- Review cards -->
+    <div class="rp-reviews__grid">
+
+      <article class="rp-review-card rp-review-card--featured">
+        <div class="rp-review-card__top">
+          <span class="rp-review-card__stars">★★★★★</span>
+          <span class="rp-review-card__verified">✔ Verified Purchase</span>
+        </div>
+        <h4 class="rp-review-card__title">"Caught a scammer. Insurance sided with me immediately."</h4>
+        <p class="rp-review-card__body">
+          "Someone slammed their brakes on the highway, jumped out screaming I rear-ended them. I pulled up the Reye Vision footage on the spot — 4K, GPS-stamped, clear as day. Officer looked at it, scammer got the citation. This device has already paid for itself five times over."
+        </p>
+        <div class="rp-review-card__author">
+          <div class="rp-review-card__avatar" aria-hidden="true">MT</div>
+          <div>
+            <strong>Marcus T.</strong> — Houston, TX
+            <span class="rp-review-card__date">Purchased 3 weeks ago</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="rp-review-card">
+        <div class="rp-review-card__top">
+          <span class="rp-review-card__stars">★★★★★</span>
+          <span class="rp-review-card__verified">✔ Verified Purchase</span>
+        </div>
+        <h4 class="rp-review-card__title">"SUV blind spots are gone. My wife has one now too."</h4>
+        <p class="rp-review-card__body">
+          "I drive a full-size SUV and the blind spots were genuinely frightening. The 170° camera is unreal — I can see everything. Parallel parking feels easy for the first time. My wife ordered hers after one test drive."
+        </p>
+        <div class="rp-review-card__author">
+          <div class="rp-review-card__avatar" aria-hidden="true">DR</div>
+          <div>
+            <strong>Diane R.</strong> — Atlanta, GA
+            <span class="rp-review-card__date">Purchased 6 weeks ago</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="rp-review-card">
+        <div class="rp-review-card__top">
+          <span class="rp-review-card__stars">★★★★★</span>
+          <span class="rp-review-card__verified">✔ Verified Purchase</span>
+        </div>
+        <h4 class="rp-review-card__title">"Set up in 4 minutes. My insurance actually discounted me."</h4>
+        <p class="rp-review-card__body">
+          "I was nervous about installing tech in my car but the instructions are idiot-proof. Four minutes start to finish. When I told my insurance company I had a dual-channel GPS dashcam they knocked 8% off my premium. That's already half the cost of the unit."
+        </p>
+        <div class="rp-review-card__author">
+          <div class="rp-review-card__avatar" aria-hidden="true">JK</div>
+          <div>
+            <strong>James K.</strong> — Chicago, IL
+            <span class="rp-review-card__date">Purchased 2 months ago</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="rp-review-card">
+        <div class="rp-review-card__top">
+          <span class="rp-review-card__stars">★★★★★</span>
+          <span class="rp-review-card__verified">✔ Verified Purchase</span>
+        </div>
+        <h4 class="rp-review-card__title">"Night vision is genuinely impressive."</h4>
+        <p class="rp-review-card__body">
+          "I commute at 5am on unlit country roads. The night vision on the rear camera picks up way more than my eyes do. Caught a deer at the roadside that I absolutely would have missed in my stock mirror. Worth every cent."
+        </p>
+        <div class="rp-review-card__author">
+          <div class="rp-review-card__avatar" aria-hidden="true">SL</div>
+          <div>
+            <strong>Sandra L.</strong> — Portland, OR
+            <span class="rp-review-card__date">Purchased 1 month ago</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="rp-review-card">
+        <div class="rp-review-card__top">
+          <span class="rp-review-card__stars">★★★★★</span>
+          <span class="rp-review-card__verified">✔ Verified Purchase</span>
+        </div>
+        <h4 class="rp-review-card__title">"Bought it for my daughter. Best decision I made."</h4>
+        <p class="rp-review-card__body">
+          "My daughter just got her license. I bought this for her car before she'd driven a single solo mile. Knowing every drive is recorded front and back, GPS-logged, with a proper wide-angle view — it's changed how much I worry. Worth ten times the price for the peace of mind."
+        </p>
+        <div class="rp-review-card__author">
+          <div class="rp-review-card__avatar" aria-hidden="true">RP</div>
+          <div>
+            <strong>Robert P.</strong> — Dallas, TX
+            <span class="rp-review-card__date">Purchased 5 weeks ago</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="rp-review-card">
+        <div class="rp-review-card__top">
+          <span class="rp-review-card__stars">★★★★★</span>
+          <span class="rp-review-card__verified">✔ Verified Purchase</span>
+        </div>
+        <h4 class="rp-review-card__title">"Rideshare drivers — this is non-negotiable."</h4>
+        <p class="rp-review-card__body">
+          "I drive Uber 40 hours a week. The number of false damage claims I've had over two years is insane. Since installing Reye Vision I've successfully disputed three claims with video + GPS proof. My rating went up, my stress went down. Every rideshare driver needs this."
+        </p>
+        <div class="rp-review-card__author">
+          <div class="rp-review-card__avatar" aria-hidden="true">AW</div>
+          <div>
+            <strong>Andre W.</strong> — Miami, FL
+            <span class="rp-review-card__date">Purchased 7 weeks ago</span>
+          </div>
+        </div>
+      </article>
+
+    </div><!-- /reviews grid -->
+
+    <div class="rp-reviews__cta-row">
+      <button class="rp-btn rp-btn--primary" onclick="document.getElementById('rp-atc-form').requestSubmit()">
+        🛒 Get Reye Vision — {{ current_variant.price | money }}
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     11. FAQ ACCORDION
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-section--gray rp-faq">
+  <div class="rp-container rp-faq__inner">
+    <p class="rp-eyebrow" style="text-align:center">GOT QUESTIONS?</p>
+    <h2 class="rp-h2" style="text-align:center">Frequently Asked Questions</h2>
+
+    <div class="rp-faq__list">
+
+      {% assign faqs = "Will it fit my car?|Yes. Reye Vision's elastic strap mount fits virtually all vehicles — cars, trucks, SUVs, and vans — with a standard rearview mirror. No tools, no adhesive required.,How long does installation take?|Most drivers are fully set up in under 5 minutes. Clip the unit onto your mirror, route the rear camera cable, plug into your 12V port, and you're done. Full instructions and a video guide are included.,Does it record when the car is off?|The device powers on automatically with your ignition and powers off when you turn the car off. Parking mode (low-power continuous recording) is available with an optional hardwire kit.,What happens if my SD card fills up?|Reye Vision uses loop recording. When the card is full, the oldest non-protected clips are automatically overwritten. Incident clips locked by the G-sensor are never deleted.,Does the GPS work without a phone or data plan?|Yes. The built-in GPS works independently via satellite — no phone, no app, no data plan required. GPS data is embedded directly into each video file.,Is it compatible with both front and rear cameras simultaneously?|Yes. Both channels record simultaneously at all times. The display shows the rear camera feed live while front recording continues in the background.,What's covered under the warranty?|Reye Vision comes with a 12-month manufacturer warranty covering all hardware defects. Our 60-day money-back guarantee means you can return it for any reason within 60 days for a full refund.,Will it void my car warranty?|No. Reye Vision is a non-invasive plug-and-play device. It doesn't modify or connect to your car's OBD port or electrical system beyond the 12V accessory socket." | split: "," %}
+
+      {% assign faq_items = "Will it fit my car?|Yes. Reye Vision's elastic strap mount fits virtually all vehicles — cars, trucks, SUVs, and vans — with a standard rearview mirror. No tools, no adhesive required.;How long does installation take?|Most drivers are fully set up in under 5 minutes. Clip the unit onto your mirror, route the rear camera cable, plug into your 12V port, and you're done. Full instructions and a video guide are included.;Does it record when the car is off?|The device powers on automatically with your ignition and powers off when you turn the car off. Parking mode (low-power continuous recording) is available with an optional hardwire kit.;What happens if my SD card fills up?|Reye Vision uses loop recording. When the card is full, the oldest non-protected clips are automatically overwritten. Incident clips locked by the G-sensor are never deleted.;Does the GPS work without a phone or data plan?|Yes. The built-in GPS works independently via satellite — no phone, no app, no data plan required. GPS data is embedded directly into each video file.;Does it record front AND rear at the same time?|Yes. Both channels record simultaneously at all times. The display shows the rear camera feed live while front recording continues in the background.;What's covered under the 60-day guarantee?|Return it for any reason within 60 days for a full refund. No questions, no restocking fee. Less than 1% of customers ever use it — because the product genuinely works.;Will it void my car warranty?|No. Reye Vision is a non-invasive plug-and-play device. It doesn't modify your car's electrical system beyond drawing power from the standard 12V accessory socket." | split: ";" %}
+
+      {% for item in faq_items %}
+        {% assign parts = item | split: "|" %}
+        <div class="rp-faq__item">
+          <button class="rp-faq__q" aria-expanded="false">
+            <span>{{ parts[0] }}</span>
+            <svg class="rp-faq__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="rp-faq__a">
+            <p>{{ parts[1] }}</p>
+          </div>
+        </div>
+      {% endfor %}
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     12. GUARANTEE BLOCK
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-guarantee">
+  <div class="rp-container rp-guarantee__grid">
+    <div class="rp-guarantee__badge-wrap">
+      <div class="rp-guarantee__badge">
+        <span class="rp-guarantee__badge-num">60</span>
+        <span class="rp-guarantee__badge-unit">DAY</span>
+        <span class="rp-guarantee__badge-text">MONEY<br>BACK</span>
+      </div>
+    </div>
+    <div class="rp-guarantee__copy">
+      <p class="rp-eyebrow">ZERO RISK. ZERO QUESTIONS.</p>
+      <h2 class="rp-h2">Try It for 60 Days — On Us</h2>
+      <p>Drive with Reye Vision for two full months. Use it every day. If it doesn't make you feel safer, see better, or give you the protection we promised — send it back. Full refund. No questions. No return shipping fees.</p>
+      <p>We offer this because <strong>less than 1% of customers ever return it.</strong> The other 99% are too busy being glad they bought it.</p>
+      <div class="rp-guarantee__icons">
+        <span>🔒 SSL Secure</span>
+        <span>📦 Free Returns</span>
+        <span>💳 All Cards Accepted</span>
+        <span>🏆 5-Star Support</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     13. FINAL CTA — price repeat + urgency
+════════════════════════════════════════════════════════ -->
+<section class="rp-section rp-final-cta">
+  <div class="rp-container rp-final-cta__inner">
+    <p class="rp-eyebrow" style="text-align:center">DON'T LEAVE YOUR BLIND SPOTS TO CHANCE</p>
+    <h2 class="rp-h2" style="text-align:center">Join 28,000+ Drivers Who Drive Protected</h2>
+    <p class="rp-final-cta__sub">This deal ends in <strong><span id="rp-final-timer">--:--:--</span></strong>. After that, the price goes back up.</p>
+
+    <div class="rp-final-cta__price-row">
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <span class="rp-price__was">{{ current_variant.compare_at_price | money }}</span>
+      {% endif %}
+      <span class="rp-price__now rp-price__now--xl">{{ current_variant.price | money }}</span>
+      {% if current_variant.compare_at_price > current_variant.price %}
+        {% assign pct2 = current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round %}
+        <span class="rp-price__save-badge">{{ pct2 }}% OFF</span>
+      {% endif %}
+    </div>
+
+    <button class="rp-btn rp-btn--primary rp-btn--xl" onclick="document.getElementById('rp-atc-form').requestSubmit()">
+      🛒 Get My Reye Vision Now
+    </button>
+    <button class="rp-btn rp-btn--secondary rp-btn--xl" id="rp-final-buy-now">
+      ⚡ Buy Now — Skip the Cart
+    </button>
+
+    <p class="rp-final-cta__trust">
+      ✅ 60-Day Money-Back Guarantee &nbsp;·&nbsp;
+      🚚 Free Shipping &nbsp;·&nbsp;
+      🔒 Secure Checkout &nbsp;·&nbsp;
+      📦 Ships Within 24 Hours
+    </p>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════
+     STYLES
+════════════════════════════════════════════════════════ -->
+<style>
+/* ── Reset ───────────────────────────────────────────── */
+.rp-page *, .rp-page *::before, .rp-page *::after { box-sizing: border-box; }
+* { box-sizing: border-box; }
+
+/* ── Tokens ──────────────────────────────────────────── */
+:root {
+  --rv-red:    #e63946;
+  --rv-dark:   #1a1a2e;
+  --rv-teal:   #2a9d8f;
+  --rv-gold:   #f4a61c;
+  --rv-gray:   #f8f9fa;
+  --rv-text:   #2d2d2d;
+  --rv-muted:  #666;
+  --rv-border: #e0e0e0;
+  --rv-radius: 10px;
+}
+
+/* ── Base ────────────────────────────────────────────── */
+.rp-container { max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+.rp-section   { padding: 72px 0; }
+.rp-section--gray { background: var(--rv-gray); }
+.rp-section--dark { background: var(--rv-dark); color: #fff; }
+.rp-eyebrow   { font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--rv-red); margin-bottom: 10px; }
+.rp-eyebrow--light { color: var(--rv-gold); }
+.rp-h2        { font-size: clamp(24px, 3.5vw, 38px); font-weight: 900; line-height: 1.15; margin-bottom: 20px; color: var(--rv-dark); }
+.rp-h2--light { color: #fff; }
+.rp-lead      { font-size: 17px; color: var(--rv-muted); margin-bottom: 24px; line-height: 1.7; }
+
+/* ── Buttons ─────────────────────────────────────────── */
+.rp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: var(--rv-radius); font-weight: 800; cursor: pointer; transition: transform .15s, box-shadow .15s; font-size: 17px; padding: 15px 28px; text-align: center; }
+.rp-btn--primary  { background: linear-gradient(135deg, var(--rv-red), #c1121f); color: #fff; box-shadow: 0 4px 18px rgba(230,57,70,.4); width: 100%; }
+.rp-btn--primary:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(230,57,70,.5); }
+.rp-btn--secondary { background: var(--rv-dark); color: #fff; width: 100%; margin-top: 10px; }
+.rp-btn--secondary:hover { background: #2d2d4e; }
+.rp-btn--atc  { flex: 1; font-size: 18px; }
+.rp-btn--disabled { background: #aaa !important; box-shadow: none !important; cursor: not-allowed; }
+.rp-btn--xl   { font-size: 20px; padding: 18px 36px; max-width: 480px; }
+
+/* ── Announce bar ────────────────────────────────────── */
+.rp-announce { background: var(--rv-dark); color: #fff; overflow: hidden; padding: 10px 0; font-size: 13px; }
+.rp-announce__track { display: flex; gap: 0; white-space: nowrap; animation: rp-scroll 30s linear infinite; }
+.rp-announce__track span { padding: 0 6px; }
+@keyframes rp-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+/* ── Sticky ATC bar ──────────────────────────────────── */
+.rp-sticky-bar { position: fixed; top: 0; left: 0; right: 0; z-index: 9000; background: #fff; border-bottom: 1px solid var(--rv-border); box-shadow: 0 2px 16px rgba(0,0,0,.12); transform: translateY(-100%); transition: transform .3s ease; }
+.rp-sticky-bar.rp-sticky-bar--visible { transform: translateY(0); }
+.rp-sticky-bar__inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 10px 20px; flex-wrap: wrap; }
+.rp-sticky-bar__product { display: flex; align-items: center; gap: 12px; }
+.rp-sticky-bar__product img { border-radius: 6px; object-fit: cover; }
+.rp-sticky-bar__rating { display: block; font-size: 12px; color: var(--rv-gold); }
+.rp-sticky-bar__price { font-size: 18px; }
+.rp-sticky-bar__price s { color: var(--rv-muted); font-size: 14px; margin-right: 6px; }
+.rp-sticky-bar__cta { width: auto; padding: 10px 24px; font-size: 15px; }
+
+/* ── Hero ────────────────────────────────────────────── */
+.rp-hero { padding: 40px 0 56px; }
+.rp-hero__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: start; }
+@media (max-width: 780px) { .rp-hero__grid { grid-template-columns: 1fr; } }
+
+/* Gallery */
+.rp-gallery__main { position: relative; border-radius: 14px; overflow: hidden; background: var(--rv-gray); aspect-ratio: 1; }
+.rp-gallery__main-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rp-gallery__badge { position: absolute; top: 14px; left: 14px; background: var(--rv-red); color: #fff; font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+.rp-gallery__thumbs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.rp-thumb { width: 76px; height: 76px; border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; background: none; padding: 0; flex-shrink: 0; transition: border-color .2s; }
+.rp-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rp-thumb--active { border-color: var(--rv-red); }
+
+/* Info */
+.rp-info__eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rv-red); margin-bottom: 6px; }
+.rp-info__title   { font-size: clamp(26px, 4vw, 40px); font-weight: 900; line-height: 1.1; margin-bottom: 8px; color: var(--rv-dark); }
+.rp-info__tagline { font-size: 17px; color: var(--rv-muted); margin-bottom: 14px; }
+
+/* Rating */
+.rp-rating { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.rp-rating__stars { color: var(--rv-gold); font-size: 20px; letter-spacing: 1px; }
+.rp-rating__count { font-size: 13px; font-weight: 600; color: var(--rv-dark); border-bottom: 1px solid currentColor; text-decoration: none; }
+.rp-rating__pill  { background: #e6f9f7; color: var(--rv-teal); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; }
+
+/* Inline press */
+.rp-press-inline { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+.rp-press-inline__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--rv-muted); }
+.rp-press-inline__logos { display: flex; gap: 14px; flex-wrap: wrap; }
+.rp-press-logo { font-size: 13px; font-weight: 800; color: #999; font-style: italic; }
+
+/* Price */
+.rp-price-block { margin-bottom: 16px; }
+.rp-price__was  { font-size: 18px; color: #bbb; text-decoration: line-through; margin-right: 10px; }
+.rp-price__now  { font-size: 34px; font-weight: 900; color: var(--rv-red); }
+.rp-price__now--xl { font-size: 44px; }
+.rp-price__save-badge { display: inline-block; background: var(--rv-red); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 4px; margin-left: 10px; vertical-align: middle; letter-spacing: .5px; }
+.rp-price__installment { font-size: 13px; color: var(--rv-muted); margin-top: 6px; }
+.rp-price__shop-pay { font-weight: 700; color: #5a31f4; }
+
+/* Stock */
+.rp-stock-signal { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #c1121f; margin-bottom: 18px; }
+.rp-stock-signal__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--rv-red); animation: rp-pulse 1.5s infinite; flex-shrink: 0; }
+@keyframes rp-pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.5; transform:scale(1.3); } }
+
+/* Bullets */
+.rp-bullets { list-style: none; padding: 0; margin-bottom: 22px; }
+.rp-bullets li { padding: 5px 0; font-size: 14px; color: var(--rv-text); line-height: 1.5; }
+
+/* Variants */
+.rp-variants { margin-bottom: 18px; }
+.rp-option { margin-bottom: 14px; }
+.rp-option__label { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.rp-option__btns  { display: flex; gap: 8px; flex-wrap: wrap; }
+.rp-opt-btn { padding: 8px 16px; border: 2px solid var(--rv-border); border-radius: 6px; font-size: 14px; cursor: pointer; background: #fff; transition: all .2s; }
+.rp-opt-btn:hover, .rp-opt-btn--active { border-color: var(--rv-red); background: #fff0f0; font-weight: 700; }
+
+/* Purchase form */
+.rp-purchase-form { margin-bottom: 10px; }
+.rp-purchase-row  { display: flex; gap: 12px; align-items: stretch; }
+.rp-qty { display: flex; align-items: center; border: 2px solid var(--rv-border); border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+.rp-qty__btn   { width: 42px; height: 54px; background: var(--rv-gray); border: none; font-size: 22px; cursor: pointer; }
+.rp-qty__btn:hover { background: #eee; }
+.rp-qty__input { width: 50px; height: 54px; border: none; text-align: center; font-size: 16px; font-weight: 700; -moz-appearance: textfield; }
+.rp-qty__input::-webkit-inner-spin-button, .rp-qty__input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* Trust pills */
+.rp-trust-pills { display: flex; gap: 10px; margin: 18px 0 14px; flex-wrap: wrap; }
+.rp-trust-pill  { display: flex; align-items: center; gap: 8px; border: 1px solid var(--rv-border); border-radius: 8px; padding: 8px 12px; font-size: 12px; font-weight: 600; flex: 1; min-width: 100px; color: var(--rv-text); }
+.rp-trust-pill svg { width: 18px; height: 18px; color: var(--rv-teal); flex-shrink: 0; }
+
+.rp-payment-icons { font-size: 12px; color: var(--rv-muted); margin-top: 8px; }
+
+/* ── Ribbon ──────────────────────────────────────────── */
+.rp-ribbon { background: var(--rv-dark); color: #fff; padding: 28px 0; }
+.rp-ribbon__inner { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 20px; text-align: center; }
+.rp-ribbon__stat strong { display: block; font-size: 30px; font-weight: 900; color: var(--rv-gold); }
+.rp-ribbon__stat span   { font-size: 13px; color: #ccc; }
+.rp-ribbon__divider { width: 1px; height: 40px; background: rgba(255,255,255,.15); }
+@media (max-width: 600px) { .rp-ribbon__divider { display: none; } }
+
+/* ── Problem ─────────────────────────────────────────── */
+.rp-problem { padding: 72px 0; }
+.rp-problem__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: center; }
+@media (max-width: 780px) { .rp-problem__grid { grid-template-columns: 1fr; } }
+.rp-problem__cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+@media (max-width: 500px) { .rp-problem__cards { grid-template-columns: 1fr; } }
+.rp-problem-card { padding: 14px; border-radius: 8px; font-size: 13px; line-height: 1.55; }
+.rp-problem-card--red { background: #fff0f0; border-left: 3px solid var(--rv-red); }
+.rp-problem-card__icon { font-size: 18px; margin-right: 6px; }
+
+.rp-fov-diagram { display: flex; align-items: center; gap: 16px; justify-content: center; }
+.rp-fov-diagram__bad, .rp-fov-diagram__good { text-align: center; padding: 24px 20px; border-radius: 12px; flex: 1; }
+.rp-fov-diagram__bad  { background: #fff0f0; border: 2px solid #ffccd0; }
+.rp-fov-diagram__good { background: #f0faf8; border: 2px solid #2a9d8f; }
+.rp-fov-diagram__vs   { font-size: 18px; font-weight: 900; color: #aaa; }
+.rp-fov-diagram__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.rp-fov-diagram__deg  { font-size: 52px; font-weight: 900; color: var(--rv-red); line-height: 1; }
+.rp-fov-diagram__sub  { font-size: 12px; color: var(--rv-muted); }
+.rp-fov-arc { width: 80px; height: 40px; border-radius: 80px 80px 0 0; margin: 0 auto 8px; }
+.rp-fov-arc--small { background: rgba(230,57,70,.25); width: 30px; }
+.rp-fov-arc--large { background: rgba(42,157,143,.25); }
+
+/* ── Feature rows ────────────────────────────────────── */
+.rp-feature-row { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; align-items: center; margin-bottom: 72px; }
+.rp-feature-row:last-child { margin-bottom: 0; }
+.rp-feature-row--reverse { direction: rtl; }
+.rp-feature-row--reverse > * { direction: ltr; }
+@media (max-width: 780px) { .rp-feature-row, .rp-feature-row--reverse { grid-template-columns: 1fr; direction: ltr; } }
+.rp-feature-row__img-placeholder { border-radius: 14px; overflow: hidden; background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%); aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.15); font-size: 13px; }
+.rp-feature-row__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rp-feature-tag { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rv-teal); margin-bottom: 10px; display: block; }
+.rp-feature-row__copy h3 { font-size: 26px; font-weight: 800; margin-bottom: 14px; color: var(--rv-dark); }
+.rp-feature-row__copy p  { font-size: 15px; color: var(--rv-muted); line-height: 1.7; margin-bottom: 16px; }
+.rp-feature-list { list-style: none; padding: 0; }
+.rp-feature-list li { font-size: 14px; color: var(--rv-text); padding: 4px 0; font-weight: 600; }
+
+/* ── Press ───────────────────────────────────────────── */
+.rp-press { padding: 44px 0; background: var(--rv-gray); text-align: center; border-top: 1px solid var(--rv-border); border-bottom: 1px solid var(--rv-border); }
+.rp-press__label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--rv-muted); margin-bottom: 18px; }
+.rp-press__logos { display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; margin-bottom: 22px; }
+.rp-press__logo-name { font-size: 18px; font-weight: 900; color: #bbb; font-style: italic; }
+.rp-press__quote { font-size: 16px; color: var(--rv-muted); font-style: italic; max-width: 580px; margin: 0 auto; }
+.rp-press__quote cite { display: block; font-size: 13px; font-weight: 700; color: var(--rv-dark); margin-top: 8px; font-style: normal; }
+
+/* ── Comparison table ────────────────────────────────── */
+.rp-compare { padding: 72px 0; }
+.rp-table-wrap { overflow-x: auto; margin-top: 32px; }
+.rp-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rp-table th, .rp-table td { padding: 14px 20px; text-align: center; border-bottom: 1px solid var(--rv-border); }
+.rp-table th { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; background: var(--rv-gray); }
+.rp-table th:first-child, .rp-table td:first-child { text-align: left; font-weight: 600; }
+.rp-table__col--us { background: rgba(230,57,70,.05); font-size: 18px; }
+.rp-table th.rp-table__col--us { background: var(--rv-red); color: #fff; }
+.rp-table tr:hover td { background: #fafafa; }
+
+/* ── How it works ────────────────────────────────────── */
+.rp-hiw { padding: 72px 0; }
+.rp-hiw__steps { display: flex; align-items: flex-start; gap: 20px; margin-top: 40px; flex-wrap: wrap; }
+.rp-hiw__step { flex: 1; min-width: 200px; }
+.rp-hiw__num  { font-size: 52px; font-weight: 900; color: rgba(255,255,255,.12); line-height: 1; margin-bottom: 10px; }
+.rp-hiw__step h3 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 10px; }
+.rp-hiw__step p  { font-size: 14px; color: rgba(255,255,255,.65); line-height: 1.7; }
+.rp-hiw__arrow { font-size: 28px; color: rgba(255,255,255,.3); padding-top: 24px; flex-shrink: 0; }
+@media (max-width: 600px) { .rp-hiw__arrow { display: none; } }
+
+/* ── Reviews ─────────────────────────────────────────── */
+.rp-reviews__agg { display: flex; align-items: flex-start; gap: 40px; background: var(--rv-gray); border-radius: 14px; padding: 28px; margin-bottom: 40px; flex-wrap: wrap; }
+.rp-reviews__score-block { text-align: center; }
+.rp-reviews__big-score { display: block; font-size: 64px; font-weight: 900; line-height: 1; color: var(--rv-dark); }
+.rp-reviews__big-stars  { display: block; font-size: 26px; color: var(--rv-gold); letter-spacing: 2px; }
+.rp-reviews__total      { font-size: 12px; color: var(--rv-muted); }
+.rp-reviews__bars { flex: 1; min-width: 180px; }
+.rp-bar-row   { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-bottom: 5px; }
+.rp-bar-track { flex: 1; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+.rp-bar-fill  { height: 100%; background: var(--rv-gold); border-radius: 4px; }
+.rp-reviews__highlights { min-width: 200px; }
+.rp-reviews__hl { font-size: 13px; color: var(--rv-text); padding: 5px 0; border-bottom: 1px solid var(--rv-border); }
+.rp-reviews__hl:last-child { border-bottom: none; }
+
+.rp-reviews__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 36px; }
+.rp-review-card { border: 1px solid var(--rv-border); border-radius: 12px; padding: 24px; background: #fff; }
+.rp-review-card--featured { border-color: var(--rv-red); background: #fff8f8; }
+.rp-review-card__top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.rp-review-card__stars   { color: var(--rv-gold); font-size: 17px; }
+.rp-review-card__verified { font-size: 11px; color: var(--rv-teal); font-weight: 700; }
+.rp-review-card__title { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--rv-dark); }
+.rp-review-card__body  { font-size: 13px; color: #555; line-height: 1.65; font-style: italic; margin-bottom: 16px; }
+.rp-review-card__author { display: flex; align-items: center; gap: 12px; }
+.rp-review-card__avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--rv-dark); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+.rp-review-card__author strong { display: block; font-size: 14px; }
+.rp-review-card__date { font-size: 11px; color: var(--rv-muted); }
+.rp-reviews__cta-row { text-align: center; }
+.rp-reviews__cta-row .rp-btn { max-width: 380px; margin: 0 auto; }
+
+/* ── FAQ ─────────────────────────────────────────────── */
+.rp-faq__inner { max-width: 760px; margin: 0 auto; }
+.rp-faq__list  { margin-top: 36px; }
+.rp-faq__item  { border-bottom: 1px solid var(--rv-border); }
+.rp-faq__q     { width: 100%; background: none; border: none; display: flex; justify-content: space-between; align-items: center; padding: 18px 0; font-size: 16px; font-weight: 700; cursor: pointer; text-align: left; gap: 16px; color: var(--rv-dark); }
+.rp-faq__chevron { width: 20px; height: 20px; flex-shrink: 0; transition: transform .25s; }
+.rp-faq__q[aria-expanded="true"] .rp-faq__chevron { transform: rotate(180deg); }
+.rp-faq__a     { overflow: hidden; max-height: 0; transition: max-height .35s ease; }
+.rp-faq__a p   { padding: 0 0 18px; font-size: 14px; color: var(--rv-muted); line-height: 1.7; }
+
+/* ── Guarantee ───────────────────────────────────────── */
+.rp-guarantee { padding: 72px 0; background: var(--rv-dark); color: #fff; }
+.rp-guarantee__grid { display: grid; grid-template-columns: auto 1fr; gap: 56px; align-items: center; }
+@media (max-width: 640px) { .rp-guarantee__grid { grid-template-columns: 1fr; text-align: center; } }
+.rp-guarantee__badge-wrap { display: flex; justify-content: center; }
+.rp-guarantee__badge { width: 190px; height: 190px; border-radius: 50%; border: 5px solid var(--rv-gold); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 16px; }
+.rp-guarantee__badge-num  { font-size: 60px; font-weight: 900; color: var(--rv-gold); line-height: 1; }
+.rp-guarantee__badge-unit { font-size: 16px; font-weight: 700; color: var(--rv-gold); letter-spacing: 2px; }
+.rp-guarantee__badge-text { font-size: 12px; font-weight: 800; color: #fff; letter-spacing: 1px; margin-top: 4px; }
+.rp-guarantee__copy .rp-h2 { color: #fff; }
+.rp-guarantee__copy p { color: rgba(255,255,255,.75); font-size: 15px; margin-bottom: 14px; line-height: 1.7; }
+.rp-guarantee__icons { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 18px; }
+.rp-guarantee__icons span { font-size: 14px; color: var(--rv-gold); font-weight: 600; }
+
+/* ── Final CTA ───────────────────────────────────────── */
+.rp-final-cta { padding: 80px 0; background: var(--rv-gray); }
+.rp-final-cta__inner { max-width: 560px; margin: 0 auto; text-align: center; }
+.rp-final-cta__sub { font-size: 16px; color: var(--rv-muted); margin-bottom: 24px; }
+.rp-final-cta__price-row { margin-bottom: 24px; }
+.rp-final-cta__trust { font-size: 12px; color: var(--rv-muted); margin-top: 18px; line-height: 2; }
+</style>
+
+
+<!-- ══════════════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ── Countdown (to midnight) ──────────────────────── */
+  function countdown(ids) {
+    var end = new Date(); end.setHours(23,59,59,999);
+    (function tick() {
+      var diff = end - Date.now();
+      if (diff < 0) diff = 0;
+      var h = Math.floor(diff / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+      var str = (h ? pad(h) + 'h ' : '') + pad(m) + 'm ' + pad(s) + 's';
+      ids.forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=str; });
+      if (diff > 0) setTimeout(tick, 1000);
+    })();
+  }
+  function pad(n){ return n < 10 ? '0'+n : n; }
+  countdown(['rp-top-timer','rp-final-timer']);
+
+  /* ── Sticky ATC bar ────────────────────────────────── */
+  var hero = document.getElementById('rp-hero');
+  var stickyBar = document.getElementById('rp-sticky-bar');
+  if (hero && stickyBar) {
+    var obs = new IntersectionObserver(function(entries){
+      stickyBar.classList.toggle('rp-sticky-bar--visible', !entries[0].isIntersecting);
+      stickyBar.setAttribute('aria-hidden', entries[0].isIntersecting ? 'true' : 'false');
+    }, { threshold: 0 });
+    obs.observe(hero);
+  }
+
+  /* ── Gallery thumbs ────────────────────────────────── */
+  var mainImg = document.getElementById('rp-main-img');
+  document.querySelectorAll('.rp-thumb').forEach(function(t){
+    t.addEventListener('click', function(){
+      if (mainImg) mainImg.src = this.dataset.src;
+      document.querySelectorAll('.rp-thumb').forEach(function(x){ x.classList.remove('rp-thumb--active'); });
+      this.classList.add('rp-thumb--active');
+    });
+  });
+
+  /* ── Quantity stepper ──────────────────────────────── */
+  var qtyEl = document.getElementById('rp-qty-val');
+  document.getElementById('rp-minus').addEventListener('click', function(){
+    var v = parseInt(qtyEl.value,10); if(v>1) qtyEl.value = v-1;
+  });
+  document.getElementById('rp-plus').addEventListener('click', function(){
+    var v = parseInt(qtyEl.value,10); if(v<10) qtyEl.value = v+1;
+  });
+
+  /* ── Variant swatches ──────────────────────────────── */
+  {% unless product.has_only_default_variant %}
+  var variants = {{ product.variants | json }};
+  var selectedOpts = [{% for o in product.options_with_values %}"{{ o.selected_value | escape }}"{% unless forloop.last %},{% endunless %}{% endfor %}];
+
+  document.querySelectorAll('.rp-opt-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var idx = parseInt(this.dataset.optIdx, 10);
+      selectedOpts[idx] = this.dataset.value;
+      this.closest('.rp-option__btns').querySelectorAll('.rp-opt-btn').forEach(function(b){ b.classList.remove('rp-opt-btn--active'); });
+      this.classList.add('rp-opt-btn--active');
+      var lbl = document.getElementById('rp-opt-' + (idx+1));
+      if(lbl) lbl.textContent = this.dataset.value;
+
+      var match = variants.find(function(v){
+        return v.options.every(function(o,i){ return o === selectedOpts[i]; });
+      });
+      if (match) {
+        document.getElementById('rp-vid').value = match.id;
+        var atcBtn = document.getElementById('rp-atc-btn');
+        if (match.available) {
+          atcBtn.disabled = false;
+          atcBtn.classList.remove('rp-btn--disabled');
+          atcBtn.textContent = '🛒 Add to Cart — ' + formatMoney(match.price);
+        } else {
+          atcBtn.disabled = true;
+          atcBtn.classList.add('rp-btn--disabled');
+          atcBtn.textContent = 'Sold Out';
+        }
+      }
+    });
+  });
+
+  function formatMoney(cents) {
+    return '{{ shop.money_format }}'.replace('{{amount}}', (cents/100).toFixed(2))
+      .replace('{{amount_no_decimals}}', Math.round(cents/100))
+      .replace(/\{\{[^}]+\}\}/, (cents/100).toFixed(2));
+  }
+  {% endunless %}
+
+  /* ── Buy Now buttons ───────────────────────────────── */
+  function buyNow() {
+    var vid = document.getElementById('rp-vid').value;
+    var qty = document.getElementById('rp-qty-val').value;
+    window.location.href = '/checkout?variant='+vid+'&quantity='+qty;
+  }
+  var bn1 = document.getElementById('rp-buy-now');
+  var bn2 = document.getElementById('rp-final-buy-now');
+  if(bn1) bn1.addEventListener('click', buyNow);
+  if(bn2) bn2.addEventListener('click', buyNow);
+
+  /* ── FAQ accordion ─────────────────────────────────── */
+  document.querySelectorAll('.rp-faq__q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var expanded = this.getAttribute('aria-expanded') === 'true';
+      // close all
+      document.querySelectorAll('.rp-faq__q').forEach(function(b){
+        b.setAttribute('aria-expanded','false');
+        b.nextElementSibling.style.maxHeight = '0';
+      });
+      if (!expanded) {
+        this.setAttribute('aria-expanded','true');
+        var panel = this.nextElementSibling;
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+    });
+  });
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Reye Vision — Pro Layout",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "number",
+      "id": "units_left",
+      "label": "Units left (urgency display)",
+      "default": 11
+    }
+  ]
+}
+{% endschema %}
