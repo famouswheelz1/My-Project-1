@@ -1,0 +1,767 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<!-- ══════════════════════════════════════════════
+     BEAUTY DEVICE — HERO SECTION
+     Layout inspired by: CarTablet Pro Max page
+     Left: sticky image + thumbnail strip
+     Right: rating → title → price → urgency →
+            feature pills → bundle selector →
+            ATC → trust strip
+════════════════════════════════════════════════ -->
+
+<section class="bd-hero" id="bd-hero">
+  <div class="bd-hero__grid">
+
+    <!-- ── LEFT: Gallery ─────────────────────── -->
+    <div class="bd-gallery">
+
+      <!-- Main image -->
+      <div class="bd-gallery__main">
+        {% if product.featured_media %}
+          <img
+            id="bd-main-img"
+            src="{{ product.featured_media | image_url: width: 1000 }}"
+            alt="{{ product.featured_media.alt | escape }}"
+            width="1000" height="1000"
+            loading="eager"
+            class="bd-gallery__main-img"
+          >
+        {% endif %}
+      </div>
+
+      <!-- Thumbnail strip -->
+      <div class="bd-gallery__thumbs" id="bd-thumbs">
+        {% for media in product.media limit: 8 %}
+          <button
+            class="bd-thumb{% if forloop.first %} bd-thumb--active{% endif %}"
+            data-src="{{ media | image_url: width: 1000 }}"
+            aria-label="Product image {{ forloop.index }}"
+          >
+            <img
+              src="{{ media | image_url: width: 120 }}"
+              alt="{{ media.alt | escape }}"
+              width="120" height="120"
+              loading="lazy"
+            >
+          </button>
+        {% endfor %}
+
+        <!-- Arrow nav (shown on mobile) -->
+        <button class="bd-thumbs__arrow bd-thumbs__arrow--prev" id="bd-prev" aria-label="Previous image">&#8249;</button>
+        <button class="bd-thumbs__arrow bd-thumbs__arrow--next" id="bd-next" aria-label="Next image">&#8250;</button>
+      </div>
+
+    </div><!-- /bd-gallery -->
+
+
+    <!-- ── RIGHT: Product info ────────────────── -->
+    <div class="bd-info">
+
+      <!-- Star rating -->
+      <div class="bd-rating">
+        <span class="bd-rating__stars">★★★★★</span>
+        <a href="#bd-reviews" class="bd-rating__text">4.8/5 based on 1,247 reviews</a>
+      </div>
+
+      <!-- Title -->
+      <h1 class="bd-info__title">{{ product.title }}</h1>
+
+      <!-- Price -->
+      <div class="bd-price">
+        {% if current_variant.compare_at_price > current_variant.price %}
+          <span class="bd-price__was">{{ current_variant.compare_at_price | money }}</span>
+          <span class="bd-price__now">{{ current_variant.price | money }}</span>
+          {% assign pct = current_variant.compare_at_price | minus: current_variant.price | times: 100 | divided_by: current_variant.compare_at_price %}
+          <span class="bd-price__badge">{{ pct }}% OFF</span>
+        {% else %}
+          <span class="bd-price__now">{{ current_variant.price | money }}</span>
+        {% endif %}
+      </div>
+
+      <!-- Urgency -->
+      <div class="bd-urgency">
+        <span class="bd-urgency__dot"></span>
+        <span class="bd-urgency__label">Almost Sold Out</span>
+      </div>
+
+      <!-- 4 Feature pills — 2×2 grid -->
+      <div class="bd-features">
+        <div class="bd-feature-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <span>Multi-Color LED Therapy</span>
+        </div>
+        <div class="bd-feature-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span>Lifts &amp; Firms Skin</span>
+        </div>
+        <div class="bd-feature-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Use at Home</span>
+        </div>
+        <div class="bd-feature-pill">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span>Dermatologist Inspired</span>
+        </div>
+      </div><!-- /bd-features -->
+
+      <!-- ── Bundle selector ─────────────────── -->
+      <div class="bd-bundles" id="bd-bundles">
+
+        <!-- Option 1: Single unit -->
+        <label class="bd-bundle bd-bundle--selected" data-bundle="single">
+          <input type="radio" name="bd-bundle" value="single" checked hidden>
+          <div class="bd-bundle__img-wrap">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title | escape }}" width="80" height="80" loading="lazy">
+            {% endif %}
+          </div>
+          <div class="bd-bundle__copy">
+            <span class="bd-bundle__name">Buy One Device</span>
+            <span class="bd-bundle__saving">You save {{ current_variant.compare_at_price | minus: current_variant.price | money }}</span>
+          </div>
+          <div class="bd-bundle__price-col">
+            <span class="bd-bundle__price">{{ current_variant.price | money }}</span>
+            {% if current_variant.compare_at_price > current_variant.price %}
+              <span class="bd-bundle__was">{{ current_variant.compare_at_price | money }}</span>
+            {% endif %}
+          </div>
+          <div class="bd-bundle__radio-dot"></div>
+        </label>
+
+        <!-- Add-on: Conductive gel -->
+        <label class="bd-addon" id="bd-addon-gel">
+          <input type="checkbox" name="bd-addon-gel" id="bd-addon-gel-input">
+          <div class="bd-addon__check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="bd-addon__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+          </div>
+          <div class="bd-addon__copy">
+            <span class="bd-addon__name">+ Conductive Gel (60ml)</span>
+            <span class="bd-addon__sub">Enhances LED penetration</span>
+          </div>
+          <div class="bd-addon__price-col">
+            <span class="bd-addon__price">$12.95</span>
+            <span class="bd-addon__was">$24.95</span>
+          </div>
+        </label>
+
+        <!-- Add-on: Protective case -->
+        <label class="bd-addon" id="bd-addon-case">
+          <input type="checkbox" name="bd-addon-case" id="bd-addon-case-input">
+          <div class="bd-addon__check">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="bd-addon__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+          </div>
+          <div class="bd-addon__copy">
+            <span class="bd-addon__name">+ Travel Protective Case</span>
+            <span class="bd-addon__sub">Velvet-lined, dust &amp; scratch proof</span>
+          </div>
+          <div class="bd-addon__price-col">
+            <span class="bd-addon__price">$9.95</span>
+            <span class="bd-addon__was">$19.95</span>
+          </div>
+        </label>
+
+        <!-- Option 2: Two units -->
+        <label class="bd-bundle" data-bundle="double">
+          <input type="radio" name="bd-bundle" value="double" hidden>
+          <div class="bd-bundle__img-wrap bd-bundle__img-wrap--double">
+            {% if product.featured_image %}
+              <img src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title | escape }}" width="80" height="80" loading="lazy">
+              <img src="{{ product.featured_image | image_url: width: 80 }}" alt="{{ product.title | escape }}" width="80" height="80" loading="lazy" class="bd-bundle__img-overlap">
+            {% endif %}
+          </div>
+          <div class="bd-bundle__copy">
+            <span class="bd-bundle__name">Buy Two Devices</span>
+            <span class="bd-bundle__saving bd-bundle__saving--green">Get an Extra 20% Discount</span>
+          </div>
+          <div class="bd-bundle__price-col">
+            <span class="bd-bundle__price" id="bd-double-price">
+              {{ current_variant.price | times: 2 | times: 0.8 | money }}
+            </span>
+            <span class="bd-bundle__was">
+              {{ current_variant.compare_at_price | times: 2 | money }}
+            </span>
+          </div>
+          <div class="bd-bundle__radio-dot"></div>
+          <span class="bd-bundle__popular-tag">MOST POPULAR</span>
+        </label>
+
+      </div><!-- /bd-bundles -->
+
+      <!-- Dynamic price display -->
+      <div class="bd-total-price" id="bd-total-price">
+        Total: <strong id="bd-total-val">{{ current_variant.price | money }}</strong>
+      </div>
+
+      <!-- ATC form -->
+      <form action="/cart/add" method="post" id="bd-atc-form">
+        <input type="hidden" name="id" id="bd-vid" value="{{ current_variant.id }}">
+        <input type="hidden" name="quantity" id="bd-qty" value="1">
+
+        <button
+          type="submit"
+          class="bd-atc-btn{% unless current_variant.available %} bd-atc-btn--disabled{% endunless %}"
+          id="bd-atc-btn"
+          {% unless current_variant.available %}disabled{% endunless %}
+        >
+          {% if current_variant.available %}
+            ADD TO CART
+          {% else %}
+            SOLD OUT
+          {% endif %}
+        </button>
+      </form>
+
+      <!-- Trust strip -->
+      <div class="bd-trust-strip">
+        <div class="bd-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 8H16V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg>
+          <div>
+            <span class="bd-trust-item__line1">Ships by</span>
+            <span class="bd-trust-item__line2">
+              {{ 'now' | date: '%s' | plus: 259200 | date: '%b %-d' }}
+            </span>
+          </div>
+        </div>
+        <div class="bd-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.63"/></svg>
+          <div>
+            <span class="bd-trust-item__line1">30-Day</span>
+            <span class="bd-trust-item__line2">Free Returns</span>
+          </div>
+        </div>
+        <div class="bd-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <div>
+            <span class="bd-trust-item__line1">Free Shipping</span>
+            <span class="bd-trust-item__line2">to US &amp; UK</span>
+          </div>
+        </div>
+      </div><!-- /bd-trust-strip -->
+
+    </div><!-- /bd-info -->
+  </div><!-- /bd-hero__grid -->
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     STYLES
+════════════════════════════════════════════ -->
+<style>
+/* ── Tokens ──────────────────────────────── */
+:root {
+  --bd-black:   #111111;
+  --bd-red:     #e8284a;
+  --bd-green:   #1a9e5f;
+  --bd-gold:    #f5a623;
+  --bd-border:  #e5e5e5;
+  --bd-gray:    #f7f7f7;
+  --bd-muted:   #767676;
+  --bd-text:    #1a1a1a;
+  --bd-radius:  8px;
+}
+
+/* ── Layout ──────────────────────────────── */
+.bd-hero { padding: 24px 16px 48px; max-width: 1200px; margin: 0 auto; }
+
+.bd-hero__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ── Gallery ─────────────────────────────── */
+.bd-gallery { position: sticky; top: 80px; }
+
+.bd-gallery__main {
+  background: var(--bd-gray);
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  margin-bottom: 12px;
+}
+
+.bd-gallery__main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity .2s;
+}
+
+/* Thumbnail strip */
+.bd-gallery__thumbs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  position: relative;
+}
+.bd-gallery__thumbs::-webkit-scrollbar { display: none; }
+
+.bd-thumb {
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  border: 2px solid var(--bd-border);
+  border-radius: var(--bd-radius);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--bd-gray);
+  padding: 0;
+  transition: border-color .2s;
+}
+.bd-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bd-thumb--active { border-color: var(--bd-black); }
+.bd-thumb:hover   { border-color: #888; }
+
+/* Arrow buttons (mobile thumbnail nav) */
+.bd-thumbs__arrow {
+  display: none;
+  position: absolute;
+  top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px;
+  background: #fff;
+  border: 1px solid var(--bd-border);
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 1px 4px rgba(0,0,0,.12);
+}
+.bd-thumbs__arrow--prev { left: 0; }
+.bd-thumbs__arrow--next { right: 0; }
+
+/* ── Product info column ─────────────────── */
+.bd-info { display: flex; flex-direction: column; gap: 0; }
+
+/* Rating */
+.bd-rating { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.bd-rating__stars { color: var(--bd-gold); font-size: 16px; letter-spacing: 1px; }
+.bd-rating__text  { font-size: 13px; color: var(--bd-muted); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+/* Title */
+.bd-info__title {
+  font-size: clamp(20px, 2.5vw, 28px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--bd-text);
+  margin: 0 0 14px;
+}
+
+/* Price */
+.bd-price { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.bd-price__was   { font-size: 18px; color: var(--bd-muted); text-decoration: line-through; }
+.bd-price__now   { font-size: 26px; font-weight: 900; color: var(--bd-text); }
+.bd-price__badge {
+  background: var(--bd-red);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: .5px;
+}
+
+/* Urgency */
+.bd-urgency {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--bd-red);
+  margin-bottom: 18px;
+}
+.bd-urgency__dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--bd-red);
+  animation: bd-pulse 1.4s infinite;
+  flex-shrink: 0;
+}
+@keyframes bd-pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:.4; transform:scale(1.4); }
+}
+
+/* Feature pills — 2×2 grid */
+.bd-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.bd-feature-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--bd-border);
+  border-radius: var(--bd-radius);
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--bd-text);
+  background: #fff;
+}
+.bd-feature-pill svg {
+  width: 18px; height: 18px;
+  flex-shrink: 0;
+  color: #444;
+}
+
+/* ── Bundle selector ─────────────────────── */
+.bd-bundles { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+
+/* Bundle radio cards */
+.bd-bundle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px solid var(--bd-border);
+  border-radius: var(--bd-radius);
+  padding: 14px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background: #fff;
+}
+.bd-bundle--selected {
+  border-color: var(--bd-black);
+  background: #fff;
+}
+.bd-bundle:hover { border-color: #aaa; }
+
+/* Radio dot */
+.bd-bundle__radio-dot {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-left: auto;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color .2s;
+}
+.bd-bundle--selected .bd-bundle__radio-dot {
+  border-color: var(--bd-black);
+}
+.bd-bundle--selected .bd-bundle__radio-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--bd-black);
+}
+
+/* Bundle image */
+.bd-bundle__img-wrap { position: relative; flex-shrink: 0; }
+.bd-bundle__img-wrap img {
+  width: 52px; height: 52px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+.bd-bundle__img-wrap--double img:last-child {
+  position: absolute;
+  top: 6px; left: 10px;
+  z-index: -1;
+  opacity: .7;
+}
+
+/* Bundle copy */
+.bd-bundle__copy { flex: 1; }
+.bd-bundle__name    { display: block; font-size: 14px; font-weight: 700; color: var(--bd-text); }
+.bd-bundle__saving  { display: block; font-size: 12px; color: var(--bd-muted); margin-top: 2px; }
+.bd-bundle__saving--green { color: var(--bd-green); font-weight: 600; }
+
+/* Bundle price */
+.bd-bundle__price-col { text-align: right; flex-shrink: 0; }
+.bd-bundle__price { display: block; font-size: 16px; font-weight: 800; color: var(--bd-text); }
+.bd-bundle__was   { display: block; font-size: 12px; color: var(--bd-muted); text-decoration: line-through; }
+
+/* Most popular tag */
+.bd-bundle__popular-tag {
+  position: absolute;
+  top: -1px; right: 44px;
+  background: var(--bd-black);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  padding: 3px 8px;
+  border-radius: 0 0 5px 5px;
+}
+
+/* Add-on checkboxes */
+.bd-addon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px dashed var(--bd-border);
+  border-radius: var(--bd-radius);
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background: var(--bd-gray);
+}
+.bd-addon:hover { border-color: #aaa; background: #f0f0f0; }
+.bd-addon input { display: none; }
+
+/* Checkbox visual */
+.bd-addon__check {
+  width: 20px; height: 20px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  transition: all .2s;
+}
+.bd-addon__check svg { width: 12px; height: 12px; color: #fff; opacity: 0; transition: opacity .15s; }
+.bd-addon.bd-addon--checked .bd-addon__check {
+  background: var(--bd-black);
+  border-color: var(--bd-black);
+}
+.bd-addon.bd-addon--checked .bd-addon__check svg { opacity: 1; }
+
+.bd-addon__icon svg { width: 22px; height: 22px; color: #555; flex-shrink: 0; }
+.bd-addon__copy { flex: 1; }
+.bd-addon__name { display: block; font-size: 13px; font-weight: 700; color: var(--bd-text); }
+.bd-addon__sub  { display: block; font-size: 11px; color: var(--bd-muted); }
+.bd-addon__price-col { text-align: right; flex-shrink: 0; }
+.bd-addon__price { display: block; font-size: 14px; font-weight: 800; color: var(--bd-text); }
+.bd-addon__was   { display: block; font-size: 11px; color: var(--bd-muted); text-decoration: line-through; }
+
+/* Dynamic total */
+.bd-total-price {
+  font-size: 14px;
+  color: var(--bd-muted);
+  text-align: right;
+  margin-bottom: 12px;
+}
+.bd-total-price strong { color: var(--bd-text); font-size: 16px; }
+
+/* ── ATC button ──────────────────────────── */
+.bd-atc-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--bd-black);
+  color: #fff;
+  border: none;
+  border-radius: var(--bd-radius);
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+  margin-bottom: 16px;
+}
+.bd-atc-btn:hover   { background: #333; }
+.bd-atc-btn:active  { transform: scale(.99); }
+.bd-atc-btn--disabled { background: #bbb; cursor: not-allowed; }
+
+/* ── Trust strip ─────────────────────────── */
+.bd-trust-strip {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--bd-border);
+}
+.bd-trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  text-align: center;
+}
+.bd-trust-item svg {
+  width: 26px; height: 26px;
+  color: #444;
+}
+.bd-trust-item__line1 {
+  display: block;
+  font-size: 11px;
+  color: var(--bd-muted);
+}
+.bd-trust-item__line2 {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--bd-text);
+}
+
+/* ════════════════════════════════════════════
+   RESPONSIVE — 768px and below
+════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .bd-hero { padding: 16px 12px 40px; }
+
+  /* Stack to single column */
+  .bd-hero__grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  /* Gallery no longer sticky */
+  .bd-gallery { position: static; }
+
+  .bd-gallery__main { border-radius: 8px; }
+
+  /* Show arrows on thumbnail strip */
+  .bd-thumbs__arrow { display: flex; }
+  .bd-gallery__thumbs { padding: 0 32px 4px; }
+
+  .bd-thumb { width: 58px; height: 58px; }
+
+  /* Title smaller */
+  .bd-info__title { font-size: 20px; }
+
+  /* Price row */
+  .bd-price__now   { font-size: 22px; }
+  .bd-price__badge { font-size: 11px; }
+
+  /* Feature pills full width on very small */
+  .bd-features { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .bd-feature-pill { font-size: 11.5px; padding: 8px 10px; }
+
+  /* Bundle cards tighten */
+  .bd-bundle { padding: 12px; gap: 10px; }
+  .bd-bundle__img-wrap img { width: 44px; height: 44px; }
+  .bd-bundle__name  { font-size: 13px; }
+  .bd-bundle__price { font-size: 14px; }
+
+  .bd-addon { padding: 10px 12px; gap: 8px; }
+  .bd-addon__name { font-size: 12px; }
+
+  /* ATC button */
+  .bd-atc-btn { padding: 16px; font-size: 15px; }
+
+  /* Trust strip */
+  .bd-trust-item svg { width: 22px; height: 22px; }
+  .bd-trust-item__line1 { font-size: 10px; }
+  .bd-trust-item__line2 { font-size: 11px; }
+}
+
+@media (max-width: 400px) {
+  .bd-features { grid-template-columns: 1fr; }
+}
+</style>
+
+
+<!-- ════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════ -->
+<script>
+(function () {
+
+  /* ── Thumbnail gallery ───────────────────── */
+  var mainImg  = document.getElementById('bd-main-img');
+  var thumbs   = document.querySelectorAll('.bd-thumb');
+  var thumbWrap = document.getElementById('bd-thumbs');
+  var thumbArr  = Array.from(thumbs);
+  var current   = 0;
+
+  function setThumb(idx) {
+    current = (idx + thumbArr.length) % thumbArr.length;
+    mainImg.src = thumbArr[current].dataset.src;
+    thumbArr.forEach(function(t){ t.classList.remove('bd-thumb--active'); });
+    thumbArr[current].classList.add('bd-thumb--active');
+    thumbArr[current].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+  }
+
+  thumbArr.forEach(function(t, i){
+    t.addEventListener('click', function(){ setThumb(i); });
+  });
+
+  var prevBtn = document.getElementById('bd-prev');
+  var nextBtn = document.getElementById('bd-next');
+  if (prevBtn) prevBtn.addEventListener('click', function(){ setThumb(current - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ setThumb(current + 1); });
+
+  /* ── Bundle selector ─────────────────────── */
+  var BASE_PRICE  = {{ current_variant.price }};      /* in cents */
+  var GEL_PRICE   = 1295;
+  var CASE_PRICE  = 995;
+  var DOUBLE_MULT = 0.8;
+
+  var selectedBundle = 'single';
+  var gelsChecked    = false;
+  var caseChecked    = false;
+
+  var totalEl    = document.getElementById('bd-total-val');
+  var atcBtn     = document.getElementById('bd-atc-btn');
+  var qtyInput   = document.getElementById('bd-qty');
+
+  function formatMoney(cents) {
+    return '$' + (cents / 100).toFixed(2);
+  }
+
+  function updateTotal() {
+    var base = selectedBundle === 'double'
+      ? Math.round(BASE_PRICE * 2 * DOUBLE_MULT)
+      : BASE_PRICE;
+
+    var addons = (gelsChecked ? GEL_PRICE : 0) + (caseChecked ? CASE_PRICE : 0);
+    var total  = base + addons;
+    totalEl.textContent = formatMoney(total);
+
+    qtyInput.value = selectedBundle === 'double' ? 2 : 1;
+  }
+
+  /* Bundle radio cards */
+  document.querySelectorAll('.bd-bundle').forEach(function(card) {
+    card.addEventListener('click', function(){
+      document.querySelectorAll('.bd-bundle').forEach(function(c){ c.classList.remove('bd-bundle--selected'); });
+      this.classList.add('bd-bundle--selected');
+      selectedBundle = this.dataset.bundle;
+      updateTotal();
+    });
+  });
+
+  /* Add-on checkboxes */
+  function wireAddon(labelId, inputId, flag) {
+    var label = document.getElementById(labelId);
+    var input = document.getElementById(inputId);
+    if (!label || !input) return;
+    label.addEventListener('click', function(e){
+      e.preventDefault();
+      input.checked = !input.checked;
+      if (flag === 'gel')  gelsChecked = input.checked;
+      if (flag === 'case') caseChecked = input.checked;
+      label.classList.toggle('bd-addon--checked', input.checked);
+      updateTotal();
+    });
+  }
+  wireAddon('bd-addon-gel',  'bd-addon-gel-input',  'gel');
+  wireAddon('bd-addon-case', 'bd-addon-case-input', 'case');
+
+  updateTotal();
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Beauty Device — Hero",
+  "tag": "section",
+  "settings": []
+}
+{% endschema %}
