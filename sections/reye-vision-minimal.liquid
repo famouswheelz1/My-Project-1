@@ -1,0 +1,213 @@
+{% assign current_variant = product.selected_or_first_available_variant %}
+
+<!-- ════════════════════════════════════════════
+     REYE VISION — MINIMAL LAYOUT (CarTablet-style)
+     Lead: blind spot elimination
+     Secondary: front/rear security recording
+════════════════════════════════════════════ -->
+
+<section class="rvm">
+
+  <!-- ── HERO ─────────────────────────────── -->
+  <div class="rvm-hero">
+    <div class="rvm-hero__gallery">
+      {% if product.featured_media %}
+        <img
+          src="{{ product.featured_media | image_url: width: 900 }}"
+          alt="{{ product.featured_media.alt | escape }}"
+          width="900" height="900"
+          loading="eager"
+          class="rvm-hero__img"
+        >
+      {% endif %}
+    </div>
+
+    <div class="rvm-hero__info">
+      <h1 class="rvm-hero__title">{{ product.title }}</h1>
+
+      <div class="rvm-hero__rating">
+        <span class="rvm-stars">★★★★★</span>
+        <span>4.8 (2,310 reviews)</span>
+      </div>
+
+      <div class="rvm-hero__price">
+        {% if current_variant.compare_at_price > current_variant.price %}
+          <span class="rvm-price-was">{{ current_variant.compare_at_price | money }}</span>
+        {% endif %}
+        <span class="rvm-price-now">{{ current_variant.price | money }}</span>
+      </div>
+
+      <p class="rvm-hero__sub">No more blind spots. See everything behind you — instantly.</p>
+
+      <form action="/cart/add" method="post" class="rvm-hero__form">
+        <input type="hidden" name="id" value="{{ current_variant.id }}">
+        <button type="submit" class="rvm-atc" {% unless current_variant.available %}disabled{% endunless %}>
+          {% if current_variant.available %}Add to Cart{% else %}Sold Out{% endif %}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── TRUST STRIP ──────────────────────── -->
+  <div class="rvm-trust">
+    <h2>Join the Reye Vision Revolution</h2>
+    <div class="rvm-trust__row">
+      <div><strong>50,000+</strong><span>Drivers</span></div>
+      <div><strong>4.8/5</strong><span>Rating</span></div>
+      <div><strong>30-Day</strong><span>Guarantee</span></div>
+    </div>
+  </div>
+
+  <!-- ── FEATURE GRID ─────────────────────── -->
+  <div class="rvm-features">
+    <h2>Drive Without Blind Spots</h2>
+
+    <div class="rvm-feature">
+      <div class="rvm-feature__img">{% if product.media[1] %}<img src="{{ product.media[1] | image_url: width: 700 }}" alt="" loading="lazy">{% endif %}</div>
+      <h3>Eliminate Blind Spots</h3>
+      <p>A full rear view, all the time — no more turning your head.</p>
+    </div>
+
+    <div class="rvm-feature">
+      <div class="rvm-feature__img">{% if product.media[2] %}<img src="{{ product.media[2] | image_url: width: 700 }}" alt="" loading="lazy">{% endif %}</div>
+      <h3>Digital Rearview Mirror</h3>
+      <p>A clearer view than any factory mirror, day or night.</p>
+    </div>
+
+    <div class="rvm-feature">
+      <div class="rvm-feature__img">{% if product.media[3] %}<img src="{{ product.media[3] | image_url: width: 700 }}" alt="" loading="lazy">{% endif %}</div>
+      <h3>Front &amp; Rear Recording</h3>
+      <p>Stay protected with continuous front and back footage.</p>
+    </div>
+
+    <div class="rvm-feature">
+      <div class="rvm-feature__img">{% if product.media[4] %}<img src="{{ product.media[4] | image_url: width: 700 }}" alt="" loading="lazy">{% endif %}</div>
+      <h3>Built-In GPS</h3>
+      <p>Always know where your car is.</p>
+    </div>
+  </div>
+
+  <!-- ── SETUP ─────────────────────────────── -->
+  <div class="rvm-setup">
+    <h2>Setup Takes 10 Minutes</h2>
+    <div class="rvm-setup__row">
+      <div><span>1</span>Clip onto your mirror</div>
+      <div><span>2</span>Plug into 12V port</div>
+      <div><span>3</span>Drive blind-spot free</div>
+    </div>
+  </div>
+
+  <!-- ── GUARANTEE BANNER ──────────────────── -->
+  <div class="rvm-guarantee">
+    <h2>Try It Risk-Free</h2>
+    <p>30-day money-back guarantee. Free shipping. No questions asked.</p>
+  </div>
+
+  <!-- ── FAQ ────────────────────────────────── -->
+  <div class="rvm-faq">
+    <h2>Questions?</h2>
+    {% assign faq_items = "Does it fit my car?@Fits any vehicle with a standard rearview mirror.;Is it easy to install?@Yes — no tools, no wiring, 10 minutes.;Does it record while parked?@Yes, with optional parking mode.;What's the warranty?@1-year warranty, 30-day money-back guarantee." | split: ";" %}
+    {% for item in faq_items %}
+      {% assign parts = item | split: "@" %}
+      <details class="rvm-faq__item">
+        <summary>{{ parts[0] }}</summary>
+        <p>{{ parts[1] }}</p>
+      </details>
+    {% endfor %}
+  </div>
+
+  <!-- ── REVIEWS ────────────────────────────── -->
+  <div class="rvm-reviews" id="rvm-reviews">
+    <h2>Reye Vision is Rated Excellent</h2>
+    <div class="rvm-reviews__score">
+      <span class="rvm-stars">★★★★★</span>
+      <span>4.8 out of 5 — based on 2,310 reviews</span>
+    </div>
+
+    <div class="rvm-review">
+      <span class="rvm-stars">★★★★★</span>
+      <p>"Caught someone backing into me on camera. Insurance claim sorted in a day."</p>
+      <span class="rvm-review__name">— Marcus T.</span>
+    </div>
+    <div class="rvm-review">
+      <span class="rvm-stars">★★★★★</span>
+      <p>"I genuinely don't know how I drove without this. Blind spots are gone."</p>
+      <span class="rvm-review__name">— Priya S.</span>
+    </div>
+    <div class="rvm-review">
+      <span class="rvm-stars">★★★★★</span>
+      <p>"Installed in minutes. The night view is so much clearer than my old mirror."</p>
+      <span class="rvm-review__name">— Dale K.</span>
+    </div>
+  </div>
+
+</section>
+
+<style>
+.rvm { max-width: 1100px; margin: 0 auto; padding: 0 16px 48px; color: #1a1a1a; }
+.rvm h2 { font-size: 22px; font-weight: 800; text-align: center; margin: 0 0 18px; }
+
+/* Hero */
+.rvm-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; padding: 24px 0; align-items: center; }
+.rvm-hero__gallery img { width: 100%; border-radius: 12px; display: block; }
+.rvm-hero__title { font-size: 26px; font-weight: 800; margin: 0 0 10px; }
+.rvm-hero__rating { display: flex; gap: 8px; align-items: center; font-size: 13px; color: #666; margin-bottom: 10px; }
+.rvm-stars { color: #f5a623; letter-spacing: 1px; }
+.rvm-hero__price { margin-bottom: 10px; }
+.rvm-price-was { text-decoration: line-through; color: #888; margin-right: 8px; }
+.rvm-price-now { font-size: 24px; font-weight: 900; }
+.rvm-hero__sub { color: #555; margin: 0 0 18px; }
+.rvm-atc { width: 100%; padding: 16px; background: #111; color: #fff; border: none; border-radius: 8px; font-weight: 800; font-size: 15px; letter-spacing: .5px; cursor: pointer; }
+.rvm-atc:disabled { background: #bbb; cursor: not-allowed; }
+
+/* Trust strip */
+.rvm-trust { text-align: center; padding: 32px 0; border-top: 1px solid #eee; }
+.rvm-trust__row { display: flex; justify-content: center; gap: 40px; }
+.rvm-trust__row div { display: flex; flex-direction: column; }
+.rvm-trust__row strong { font-size: 20px; }
+.rvm-trust__row span { font-size: 12px; color: #777; }
+
+/* Features */
+.rvm-features { padding: 32px 0; border-top: 1px solid #eee; }
+.rvm-feature { margin-bottom: 28px; text-align: center; }
+.rvm-feature__img img { width: 100%; max-width: 480px; border-radius: 10px; margin: 0 auto 14px; display: block; }
+.rvm-feature h3 { font-size: 17px; margin: 0 0 6px; }
+.rvm-feature p { font-size: 14px; color: #555; margin: 0; }
+
+/* Setup */
+.rvm-setup { padding: 32px 0; border-top: 1px solid #eee; text-align: center; }
+.rvm-setup__row { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+.rvm-setup__row div { font-size: 14px; font-weight: 600; }
+.rvm-setup__row span { display: block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: #111; color: #fff; margin: 0 auto 8px; font-size: 13px; }
+
+/* Guarantee */
+.rvm-guarantee { text-align: center; padding: 28px 16px; background: #f7f7f7; border-radius: 12px; margin: 32px 0; }
+.rvm-guarantee p { color: #555; margin: 0; }
+
+/* FAQ */
+.rvm-faq { padding: 32px 0; border-top: 1px solid #eee; }
+.rvm-faq__item { border-bottom: 1px solid #eee; padding: 12px 0; }
+.rvm-faq__item summary { font-weight: 600; cursor: pointer; font-size: 14px; }
+.rvm-faq__item p { font-size: 13px; color: #555; margin: 8px 0 0; }
+
+/* Reviews */
+.rvm-reviews { padding: 32px 0; border-top: 1px solid #eee; text-align: center; }
+.rvm-reviews__score { margin-bottom: 20px; font-size: 13px; color: #555; }
+.rvm-review { max-width: 480px; margin: 0 auto 18px; }
+.rvm-review p { font-size: 14px; color: #333; margin: 6px 0; }
+.rvm-review__name { font-size: 12px; color: #888; }
+
+@media (max-width: 768px) {
+  .rvm-hero { grid-template-columns: 1fr; gap: 18px; padding: 16px 0; }
+  .rvm-hero__title { font-size: 21px; }
+  .rvm-trust__row { gap: 24px; }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Reye Vision — Minimal",
+  "tag": "section",
+  "settings": []
+}
+{% endschema %}
